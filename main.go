@@ -1,12 +1,8 @@
 package main
 
 import (
-	"encoding/json"
-	"fmt"
-	"net/http"
-
 	"github.com/gin-gonic/gin"
-	"github.com/go-playground/validator/v10"
+	"github.com/xvbnm48/go-pustaka-api-kw/handler"
 )
 
 func main() {
@@ -14,84 +10,11 @@ func main() {
 
 	v1 := router.Group("/v1")
 
-	v1.GET("/", rootHandler)
-	v1.GET("/hello", helloHandler)
-	v1.GET("books/:id/:title", booksHandler)
-	v1.GET("/query", queryHandler)
-	v1.POST("/books", postBooksHandler)
+	v1.GET("/", handler.RootHandler)
+	v1.GET("/hello", handler.HelloHandler)
+	v1.GET("books/:id/:title", handler.BooksHandler)
+	v1.GET("/query", handler.QueryHandler)
+	v1.POST("/books", handler.PostBooksHandler)
 
 	router.Run(":8080")
-}
-
-func rootHandler(c *gin.Context) {
-	c.JSON(200, gin.H{
-		"Name":    "sakura endo",
-		"Age":     20,
-		"Address": "Tokyo",
-	})
-}
-
-func helloHandler(c *gin.Context) {
-	c.JSON(200, gin.H{
-		"Name":    "sakura endo",
-		"Age":     20,
-		"Address": "Tokyo",
-	})
-}
-
-func booksHandler(c *gin.Context) {
-	id := c.Param("id")
-	title := c.Param("title")
-
-	c.JSON(200, gin.H{
-		"id":    id,
-		"title": title,
-	})
-}
-
-func queryHandler(c *gin.Context) {
-	title := c.Query("title")
-	price := c.Query("price")
-
-	c.JSON(200, gin.H{
-		"title": title,
-		"price": price,
-	})
-
-}
-
-type BookInput struct {
-	Title string      `json:"title" binding:"required"`
-	Price json.Number `json:"price" binding:"required|number"`
-	// SubTitle string `json:"sub_title"`
-}
-
-func postBooksHandler(c *gin.Context) {
-	var bookinput BookInput
-	err := c.ShouldBindJSON(&bookinput)
-
-	if err != nil {
-		errorMessages := []string{}
-		for _, e := range err.(validator.ValidationErrors) {
-			errorMessage := fmt.Sprintf("error on field %s , condition %s", e.Field(), e.ActualTag())
-			errorMessages = append(errorMessages, errorMessage)
-			// c.JSON(400, errorMessage)
-			// fmt.Println(err)
-			// return
-		}
-
-		c.JSON(http.StatusBadRequest, gin.H{
-			"error": errorMessages,
-		})
-
-		return
-
-	}
-
-	c.JSON(200, gin.H{
-		"title": bookinput.Title,
-		"price": bookinput.Price,
-		// "sub_title": bookinput.SubTitle,
-	})
-
 }
