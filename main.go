@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/gin-gonic/gin"
+	"github.com/go-playground/validator/v10"
 )
 
 func main() {
@@ -66,11 +67,13 @@ func postBooksHandler(c *gin.Context) {
 	err := c.ShouldBindJSON(&bookinput)
 
 	if err != nil {
-		c.JSON(400, gin.H{
-			"error": err.Error(),
-		})
-		fmt.Println(err)
-		return
+		for _, e := range err.(validator.ValidationErrors) {
+			errorMessage := fmt.Sprintf("error on field %s , condition %s", e.Field(), e.ActualTag())
+			c.JSON(400, errorMessage)
+			fmt.Println(err)
+			return
+		}
+
 	}
 
 	c.JSON(200, gin.H{
