@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"log"
 	"os"
 
@@ -28,35 +27,15 @@ func main() {
 	}
 
 	db.AutoMigrate(&book.Book{})
-	// book := &book.Book{}
-	// book.Title = "Bloom into you"
-	// book.Price = 150
-	// book.Description = "bloom into you is a manga from japan about a 2 girls "
-	// book.Rating = 9
-
-	// err = db.Create(&book).Error
-	// if err != nil {
-	// 	log.Fatal("db create error")
-	// }
-
-	// var book book.Book
-	var book book.Book
-	// err = db.Debug().First(&book, 2).Error
-	// err = db.Debug().Find(&books).Error
-	// err = db.Debug().Where("title =?", "Bloom into you").Find(&books).Error
-	err = db.Debug().Where("id =?", 1).First(&book).Error
-	if err != nil {
-		fmt.Println("error find book record ")
+	bookRepository := book.NewRepository(db)
+	// book, err := bookRepository.FindByID(2)
+	book := book.Book{
+		Title:       "Tonikaku Kawaii",
+		Description: "Kawaii",
+		Price:       100,
+		Rating:      10,
 	}
-
-	book.Title = "Golang books"
-	err = db.Save(&book).Error
-	if err != nil {
-		fmt.Println("error find book record ")
-	}
-
-	// fmt.Println("title:", book.Title)
-	// fmt.Println("book object %v", book)
+	_, err = bookRepository.Create(book)
 
 	router := gin.Default()
 
