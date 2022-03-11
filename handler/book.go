@@ -47,7 +47,7 @@ func QueryHandler(c *gin.Context) {
 }
 
 func PostBooksHandler(c *gin.Context) {
-	var bookinput book.BookInput
+	var bookinput book.BookRequest
 	err := c.ShouldBindJSON(&bookinput)
 
 	if err != nil {
