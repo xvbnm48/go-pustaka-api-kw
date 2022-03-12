@@ -10,3 +10,11 @@ type BookRequest struct {
 	Discount    json.Number `json:"discount" binding:"required|number"`
 	// SubTitle string `json:"sub_title"`
 }
+type BookRequestUpdate struct {
+	Title       string      `json:"title" `
+	Price       json.Number `json:"price" `
+	Description string      `json:"description" `
+	Rating      json.Number `json:"rating"`
+	Discount    json.Number `json:"discount" `
+	// SubTitle string `json:"sub_title"`
+}

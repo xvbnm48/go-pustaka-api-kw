@@ -40,7 +40,10 @@ func main() {
 	// v1.GET("books/:id/:title", bookHandler.BooksHandler)
 	// v1.GET("/query", bookHandler.QueryHandler)
 	v1.GET("/books", bookHandler.GetBooks)
-	v1.POST("/books", bookHandler.PostBooksHandler)
+	v1.GET("/books/:id", bookHandler.Getbook)
+	v1.POST("/books", bookHandler.CreateBook)
+	v1.PUT("/books/:id", bookHandler.UpdateBook)
+	v1.DELETE("/books/:id", bookHandler.DeleteBook)
 
 	port := os.Getenv("PORT")
 	if port == "" {
