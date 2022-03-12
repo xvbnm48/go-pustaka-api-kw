@@ -29,23 +29,18 @@ func main() {
 	db.AutoMigrate(&book.Book{})
 	bookRepository := book.NewRepository(db)
 	bookService := book.NewService(bookRepository)
-	// book, err := bookRepository.FindByID(2)
-	bookRequest := book.BookRequest{
-		Title: "Tonikaku Kawaii",
-		Price: "100",
-	}
-	// _, err = bookRepository.Create(book)
-	bookService.Create(bookRequest)
+	bookHandler := handler.NewbookHandler(bookService)
 
 	router := gin.Default()
 
 	v1 := router.Group("/v1")
 
-	v1.GET("/", handler.RootHandler)
-	v1.GET("/hello", handler.HelloHandler)
-	v1.GET("books/:id/:title", handler.BooksHandler)
-	v1.GET("/query", handler.QueryHandler)
-	v1.POST("/books", handler.PostBooksHandler)
+	// v1.GET("/", bookHandler.RootHandler)
+	// v1.GET("/hello", bookHandler.HelloHandler)
+	// v1.GET("books/:id/:title", bookHandler.BooksHandler)
+	// v1.GET("/query", bookHandler.QueryHandler)
+	v1.GET("/books", bookHandler.GetBooks)
+	v1.POST("/books", bookHandler.PostBooksHandler)
 
 	port := os.Getenv("PORT")
 	if port == "" {

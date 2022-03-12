@@ -9,46 +9,46 @@ import (
 	"github.com/xvbnm48/go-pustaka-api-kw/book"
 )
 
-func RootHandler(c *gin.Context) {
-	c.JSON(200, gin.H{
-		"Name":    "sakura endo",
-		"Age":     20,
-		"Address": "Tokyo",
+type bookHandler struct {
+	bookService book.Service
+}
+
+func NewbookHandler(bookService book.Service) *bookHandler {
+	return &bookHandler{bookService: bookService}
+}
+
+func (h *bookHandler) GetBooks(c *gin.Context) {
+	books, err := h.bookService.FindAll()
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"errors": err,
+		})
+		return
+	}
+
+	var booksResponse []book.BookResponse
+
+	for _, b := range books {
+		bookResponse := book.BookResponse{
+			ID:          b.ID,
+			Title:       b.Title,
+			Description: b.Description,
+			Price:       b.Price,
+			Rating:      b.Rating,
+			Discount:    b.Discount,
+		}
+		booksResponse = append(booksResponse, bookResponse)
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"data": booksResponse,
 	})
 }
 
-func HelloHandler(c *gin.Context) {
-	c.JSON(200, gin.H{
-		"Name":    "sakura endo",
-		"Age":     20,
-		"Address": "Tokyo",
-	})
-}
+func (h *bookHandler) PostBooksHandler(c *gin.Context) {
+	var bookRequest book.BookRequest
 
-func BooksHandler(c *gin.Context) {
-	id := c.Param("id")
-	title := c.Param("title")
-
-	c.JSON(200, gin.H{
-		"id":    id,
-		"title": title,
-	})
-}
-
-func QueryHandler(c *gin.Context) {
-	title := c.Query("title")
-	price := c.Query("price")
-
-	c.JSON(200, gin.H{
-		"title": title,
-		"price": price,
-	})
-
-}
-
-func PostBooksHandler(c *gin.Context) {
-	var bookinput book.BookRequest
-	err := c.ShouldBindJSON(&bookinput)
+	err := c.ShouldBindJSON(&bookRequest)
 
 	if err != nil {
 		errorMessages := []string{}
@@ -68,9 +68,15 @@ func PostBooksHandler(c *gin.Context) {
 
 	}
 
+	book, err := h.bookService.Create(bookRequest)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"errors": err,
+		})
+	}
+
 	c.JSON(200, gin.H{
-		"title": bookinput.Title,
-		"price": bookinput.Price,
+		"data": book,
 		// "sub_title": bookinput.SubTitle,
 	})
 

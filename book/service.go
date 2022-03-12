@@ -26,9 +26,14 @@ func (s *service) FindByID(ID int) (Book, error) {
 
 func (s *service) Create(bookRequest BookRequest) (Book, error) {
 	price, _ := bookRequest.Price.Int64()
+	rating, _ := bookRequest.Rating.Int64()
+	discount, _ := bookRequest.Discount.Int64()
 	book := Book{
-		Title: bookRequest.Title,
-		Price: int(price),
+		Title:       bookRequest.Title,
+		Price:       int(price),
+		Description: bookRequest.Description,
+		Discount:    int(discount),
+		Rating:      int(rating),
 	}
 	newBook, err := s.repository.Create(book)
 	return newBook, err
